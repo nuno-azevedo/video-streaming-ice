@@ -1,3 +1,4 @@
-Client
-Server
+*.class
 *.mp4
+.idea
+ice-demos
