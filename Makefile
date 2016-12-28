@@ -7,6 +7,7 @@ OUT = build
 ICE_JAR := /usr/share/java/ice-3.6.3.jar
 CLASSPATH := ${ICE_JAR}:${OUT}
 
+PORTAL = Portal
 SERVER = Server
 CLIENT = Client
 
@@ -22,32 +23,42 @@ CLIENT = Client
 
 default: build
 
-build: server client
+build: portal server client
 
 
-server: printer ${OUT}/Server.class
+portal: ${OUT}/PortalI.class ${OUT}/Portal.class
+
+${OUT}/PortalI.class: ${SRC}/PortalI.java ${ICE}/Portal.ice
+	mkdir -p ${OUT}
+	slice2java --output-dir ${SRC} ${ICE}/Portal.ice
+	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/PortalI.java ${SRC}/Demo/*.java
+
+${OUT}/Portal.class: ${SRC}/Portal.java
+	mkdir -p ${OUT}
+	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Portal.java
+
+
+server: ${OUT}/ServerI.class ${OUT}/Server.class
+
+${OUT}/ServerI.class: ${SRC}/ServerI.java ${ICE}/Server.ice
+	mkdir -p ${OUT}
+	slice2java --output-dir ${SRC} ${ICE}/Server.ice
+	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/ServerI.java ${SRC}/Demo/*.java
 
 ${OUT}/Server.class: ${SRC}/Server.java
 	mkdir -p ${OUT}
 	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Server.java
 
 
-client: printer ${OUT}/Client.class
+client: ${OUT}/PortalI.class ${OUT}/Client.class
 
 ${OUT}/Client.class: ${SRC}/Client.java
 	mkdir -p ${OUT}
 	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Client.java
 
 
-printer: ${OUT}/PrinterI.class
-
-${OUT}/PrinterI.class: ${SRC}/PrinterI.java ${SRC}/Demo/Printer.java
-	mkdir -p ${OUT}
-	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/PrinterI.java ${SRC}/Demo/*.java
-
-${SRC}/Demo/Printer.java: ${ICE}/Printer.ice
-	slice2java --output-dir ${SRC} ${ICE}/Printer.ice
-
+run-portal: portal
+	- @export CLASSPATH=${CLASSPATH}; java ${PORTAL}
 
 run-server: server
 	- @export CLASSPATH=${CLASSPATH}; java ${SERVER}
