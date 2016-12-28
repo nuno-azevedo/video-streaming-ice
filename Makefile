@@ -1,14 +1,14 @@
 JC = javac
 
-SRC = src/java
-ICE = src/slice
+SRC = src/main/java
+ICE = src/main/slice
 OUT = build
 
 ICE_JAR := /usr/share/java/ice-3.6.3.jar
 CLASSPATH := ${ICE_JAR}:${OUT}
 
 PORTAL = Portal
-SERVER = Server
+STREAMER = Streamer
 CLIENT = Client
 
 .SUFFIXES: .java .class
@@ -17,13 +17,13 @@ CLIENT = Client
 	# mkdir -p ${OUT}
 	# ${JC} -d ${OUT} -classpath ${CLASSPATH} $*.java
 
-# CLASSES = ${SRC}/Server.java ${SRC}/Client.java ${SRC}/PrinterI.java
+# CLASSES = ${SRC}/Streamer.java ${SRC}/Client.java ${SRC}/PrinterI.java
 
 # classes: ${CLASSES:.java=.class}
 
 default: build
 
-build: portal server client
+build: portal streamer client
 
 
 portal: ${OUT}/PortalI.class ${OUT}/Portal.class
@@ -31,23 +31,18 @@ portal: ${OUT}/PortalI.class ${OUT}/Portal.class
 ${OUT}/PortalI.class: ${SRC}/PortalI.java ${ICE}/Portal.ice
 	mkdir -p ${OUT}
 	slice2java --output-dir ${SRC} ${ICE}/Portal.ice
-	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/PortalI.java ${SRC}/Demo/*.java
+	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/PortalI.java ${SRC}/VideoStreaming/*.java
 
 ${OUT}/Portal.class: ${SRC}/Portal.java
 	mkdir -p ${OUT}
 	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Portal.java
 
 
-server: ${OUT}/ServerI.class ${OUT}/Server.class
+streamer: ${OUT}/PortalI.class ${OUT}/Streamer.class
 
-${OUT}/ServerI.class: ${SRC}/ServerI.java ${ICE}/Server.ice
+${OUT}/Streamer.class: ${SRC}/Streamer.java
 	mkdir -p ${OUT}
-	slice2java --output-dir ${SRC} ${ICE}/Server.ice
-	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/ServerI.java ${SRC}/Demo/*.java
-
-${OUT}/Server.class: ${SRC}/Server.java
-	mkdir -p ${OUT}
-	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Server.java
+	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Streamer.java
 
 
 client: ${OUT}/PortalI.class ${OUT}/Client.class
@@ -60,16 +55,16 @@ ${OUT}/Client.class: ${SRC}/Client.java
 run-portal: portal
 	- @export CLASSPATH=${CLASSPATH}; java ${PORTAL}
 
-run-server: server
-	- @export CLASSPATH=${CLASSPATH}; java ${SERVER}
+run-streamer: streamer
+	- @export CLASSPATH=${CLASSPATH}; java ${STREAMER}
 
 run-client: client
 	- @export CLASSPATH=${CLASSPATH}; java ${CLIENT}
 
 
 clean:
-	rm -rf ${OUT} ${SRC}/Demo
+	rm -rf ${OUT} ${SRC}/VideoStreaming
 
 
 stop:
-	$(shell jps | grep 'Server\|Client' | cut -d" " -f1 | xargs kill -9)
+	$(shell jps | grep 'Portal\|Streamer\|Client' | cut -d" " -f1 | xargs kill -9)
