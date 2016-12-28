@@ -4,9 +4,9 @@ public class Server {
         Ice.Communicator ic = null;
         try {
             ic = Ice.Util.initialize(args);
-            Ice.ObjectAdapter adapter = ic.createObjectAdapterWithEndpoints("SimplePrinterAdapter", "default -p 10000");
-            Ice.Object object = new PrinterI();
-            adapter.add(object, ic.stringToIdentity("SimplePrinter"));
+            Ice.ObjectAdapter adapter = ic.createObjectAdapterWithEndpoints("Server", "default -p 10001");
+            Ice.Object object = new ServerI();
+            adapter.add(object, ic.stringToIdentity("Server"));
             adapter.activate();
             ic.waitForShutdown();
         } catch (Ice.LocalException e) {
@@ -17,7 +17,6 @@ public class Server {
             status = 1;
         }
         if (ic != null) {
-            // Clean up
             try {
                 ic.destroy();
             } catch (Exception e) {
