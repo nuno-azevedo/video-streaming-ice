@@ -1,5 +1,4 @@
 *.class
-*.mp4
 .idea
 .gradle
 build
