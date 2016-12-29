@@ -22,7 +22,7 @@ dependencies {
 }
 
 task compileSlice(type: Exec) {
-    commandLine 'slice2java', '--output-dir', "${projectDir}/src/main/java", "${projectDir}/src/main/slice/Printer.ice"
+    commandLine 'slice2java', '--output-dir', "${projectDir}/src/main/java", "${projectDir}/src/main/slice/Portal.ice"
 
     standardOutput = new ByteArrayOutputStream()
 
