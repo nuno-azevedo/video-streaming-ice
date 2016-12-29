@@ -1,5 +1,7 @@
 *.class
 *.mp4
 .idea
+.gradle
+build
 ice-demos
-src/java/Demo
+src/main/java/VideoStreaming
