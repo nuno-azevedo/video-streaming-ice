@@ -1,14 +1,22 @@
-public class Server {
+import VideoStreaming.*;
+
+public class Streamer {
     public static void main(String args[]) {
         int status = 0;
         Ice.Communicator ic = null;
         try {
             ic = Ice.Util.initialize(args);
-            Ice.ObjectAdapter adapter = ic.createObjectAdapterWithEndpoints("Server", "default -p 10001");
-            Ice.Object object = new ServerI();
-            adapter.add(object, ic.stringToIdentity("Server"));
-            adapter.activate();
-            ic.waitForShutdown();
+            Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p 10000");
+            VideoStreaming.PortalPrx portal = VideoStreaming.PortalPrxHelper.checkedCast(base);
+            if (portal == null) throw new Error("Invalid proxy");
+            Stream stream = new Stream(
+                "The Vagabond",
+                new Endpoint("tcp", "127.0.0.1", 10000),
+                new Resolution(480, 720),
+                400,
+                new String[] { "Film", "Story", "Vagabond" }
+            );
+            portal.register(stream);
         } catch (Ice.LocalException e) {
             e.printStackTrace();
             status = 1;

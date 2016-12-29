@@ -1,18 +1,14 @@
-public class Client {
+public class Portal {
     public static void main(String args[]) {
         int status = 0;
         Ice.Communicator ic = null;
         try {
             ic = Ice.Util.initialize(args);
-            Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p 10000");
-            Demo.PortalPrx portal = Demo.PortalPrxHelper.checkedCast(base);
-            if (portal == null) throw new Error("Invalid proxy");
-            portal.print("Hello Portal!");
-
-            base = ic.stringToProxy("Server: default -p 10001");
-            Demo.ServerPrx server = Demo.ServerPrxHelper.checkedCast(base);
-            if (server == null) throw new Error("Invalid proxy");
-            server.print("Hello Server!");
+            Ice.ObjectAdapter adapter = ic.createObjectAdapterWithEndpoints("PortalAdapter", "default -p 10000");
+            Ice.Object object = new PortalI();
+            adapter.add(object, ic.stringToIdentity("Portal"));
+            adapter.activate();
+            ic.waitForShutdown();
         } catch (Ice.LocalException e) {
             e.printStackTrace();
             status = 1;
