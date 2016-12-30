@@ -24,8 +24,12 @@ module VideoStreaming {
     sequence<Stream> Streams;
 
     interface Portal {
-        void register(Stream s);
-        void remove(Stream s);
+        void register(Stream stream);
+        void remove(Stream stream);
         Streams getStreams();
+    };
+
+    interface Notifier {
+        void inform(string stream);
     };
 };
