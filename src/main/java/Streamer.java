@@ -1,4 +1,6 @@
-import VideoStreaming.*;
+import VideoStreaming.Endpoint;
+import VideoStreaming.Resolution;
+import VideoStreaming.Stream;
 
 public class Streamer {
     public static void main(String args[]) {
@@ -9,6 +11,7 @@ public class Streamer {
             Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p 10000");
             VideoStreaming.PortalPrx portal = VideoStreaming.PortalPrxHelper.checkedCast(base);
             if (portal == null) throw new Error("Invalid proxy");
+
             Stream stream = new Stream(
                 "The Vagabond",
                 new Endpoint("tcp", "127.0.0.1", 10000),
