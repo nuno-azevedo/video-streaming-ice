@@ -1,8 +1,6 @@
 import VideoStreaming.Stream;
 import java.util.Scanner;
 
-import static java.lang.String.join;
-
 public class Client {
     public static VideoStreaming.PortalPrx portal;
 
@@ -76,7 +74,7 @@ public class Client {
                 s.getEndpoint().getTransport() + "://" + s.getEndpoint().getIp() + ":" + s.getEndpoint().getPort(),
                 s.getResolution().getWidth() + "x" + s.getResolution().getHeight(),
                 s.getBitrate(),
-                "[" + join(", ", s.getKeywords()) + "]"
+                "[" + String.join(", ", s.getKeywords()) + "]"
             );
         }
     }
