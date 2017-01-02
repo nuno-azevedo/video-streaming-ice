@@ -4,7 +4,7 @@ import VideoStreaming.NotifierPrxHelper;
 public class Publisher extends Ice.Application {
     public static void main(String args[]) {
         Publisher app = new Publisher();
-        int status = app.main("Publisher", args, "config.pub");
+        int status = app.main("Publisher", args, "configs/config.pub");
         System.exit(status);
     }
 

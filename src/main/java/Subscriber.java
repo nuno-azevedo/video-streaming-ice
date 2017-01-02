@@ -1,14 +1,16 @@
+import VideoStreaming.Notifier;
+
 import IceStorm.AlreadySubscribed;
 import IceStorm.BadQoS;
 import IceStorm.InvalidSubscriber;
 import IceStorm.NoSuchTopic;
-import VideoStreaming.Notifier;
+
 import java.util.Map;
 
 public class Subscriber extends Ice.Application {
     public static void main(String args[]) {
         Subscriber app = new Subscriber();
-        int status = app.main("Subscriber", args, "config.sub");
+        int status = app.main("Subscriber", args, "configs/config.sub");
         System.exit(status);
     }
 
