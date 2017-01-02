@@ -52,6 +52,10 @@ ${OUT}/Client.class: ${SRC}/Client.java
 	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Client.java
 
 
+icebox:
+	icebox --Ice.Config=configs/config.icebox
+
+
 run-portal: portal
 	- @export CLASSPATH=${CLASSPATH}; java ${PORTAL}
 
