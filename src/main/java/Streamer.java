@@ -1,6 +1,4 @@
-import VideoStreaming.Endpoint;
-import VideoStreaming.Resolution;
-import VideoStreaming.Stream;
+import Streaming.*;
 
 public class Streamer {
     public static void main(String args[]) {
@@ -8,8 +6,8 @@ public class Streamer {
         Ice.Communicator ic = null;
         try {
             ic = Ice.Util.initialize(args);
-            Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p 10000");
-            VideoStreaming.PortalPrx portal = VideoStreaming.PortalPrxHelper.checkedCast(base);
+            Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p 11000");
+            PortalPrx portal = PortalPrxHelper.checkedCast(base);
             if (portal == null) throw new Error("Invalid proxy");
 
             Stream stream = new Stream(
