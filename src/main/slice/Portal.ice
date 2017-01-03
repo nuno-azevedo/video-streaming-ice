@@ -1,4 +1,4 @@
-module VideoStreaming {
+module Streaming {
     class Endpoint {
         ["java:getset"] string transport;
         ["java:getset"] string ip;
@@ -26,7 +26,9 @@ module VideoStreaming {
     interface Portal {
         void register(Stream stream);
         void remove(Stream stream);
-        Streams getStreams();
+        void update(Stream stream);
+        Stream get(string stream);
+        Streams getAll();
     };
 
     interface Notifier {
