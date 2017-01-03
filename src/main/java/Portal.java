@@ -1,10 +1,17 @@
-public class Portal {
+public class Portal extends Ice.Application {
     public static void main(String args[]) {
+        Portal app = new Portal();
+        int status = app.main("Portal", args, "configs/config.pub");
+        System.exit(status);
+    }
+
+    @Override
+    public int run(String args[]) {
         int status = 0;
         Ice.Communicator ic = null;
         try {
             ic = Ice.Util.initialize(args);
-            Ice.ObjectAdapter adapter = ic.createObjectAdapterWithEndpoints("PortalAdapter", "default -p 10000");
+            Ice.ObjectAdapter adapter = ic.createObjectAdapterWithEndpoints("PortalAdapter", "default -p 11000");
             Ice.Object object = new PortalI();
             adapter.add(object, ic.stringToIdentity("Portal"));
             adapter.activate();
@@ -24,6 +31,6 @@ public class Portal {
                 status = 1;
             }
         }
-        System.exit(status);
+        return status;
     }
 }
