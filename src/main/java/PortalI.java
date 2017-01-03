@@ -1,6 +1,8 @@
+import Streaming.NotifierPrx;
 import Streaming.NotifierPrxHelper;
 import Streaming.Stream;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class PortalI extends Streaming._PortalDisp {
     private Map<Stream, Long> Streams = new HashMap<Stream, Long>();
-    Streaming.NotifierPrx Notifier = null;
+    NotifierPrx Notifier = null;
 
     PortalI() {
         Ice.ObjectPrx obj = Ice.Application.communicator().propertyToProxy("TopicManager.Proxy");
@@ -35,18 +37,11 @@ public class PortalI extends Streaming._PortalDisp {
         Ice.ObjectPrx publisher = topic.getPublisher().ice_oneway();
         Notifier = NotifierPrxHelper.uncheckedCast(publisher);
 
-        new Thread(() -> {
-            while (true) {
-                for (Stream s : Streams.keySet())
-                    if (System.currentTimeMillis() - Streams.get(s) >= 60000)
-                        Streams.remove(s);
-                try {
-                    Thread.sleep(60000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        new Thread(() -> new Timer(60000, (z) -> {
+            for (Stream s : Streams.keySet())
+                if (System.currentTimeMillis() - Streams.get(s) >= 60000)
+                    Streams.remove(s);
+        }).start()).start();
     }
 
     // Calls from Streaming Servers
