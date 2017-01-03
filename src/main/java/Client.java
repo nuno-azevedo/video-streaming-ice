@@ -1,18 +1,56 @@
-import VideoStreaming.Stream;
+import IceStorm.AlreadySubscribed;
+import IceStorm.BadQoS;
+import IceStorm.InvalidSubscriber;
+import IceStorm.NoSuchTopic;
+import Streaming.Notifier;
+import Streaming.PortalPrx;
+import Streaming.PortalPrxHelper;
+import Streaming.Stream;
+
 import java.util.Scanner;
 
-public class Client {
-    public static VideoStreaming.PortalPrx portal;
+public class Client extends Ice.Application {
+    public static PortalPrx Portal = null;
 
     public static void main(String args[]) {
+        Client app = new Client();
+        int status = app.main("Subscriber", args, "configs/config.sub");
+        System.exit(status);
+    }
+
+    @Override
+    public int run(String args[]) {
         int status = 0;
         Ice.Communicator ic = null;
         try {
             ic = Ice.Util.initialize(args);
-            Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p 10000");
+            Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p 11000");
 
-            portal = VideoStreaming.PortalPrxHelper.checkedCast(base);
-            if (portal == null) throw new Error("Invalid proxy");
+            Portal = PortalPrxHelper.checkedCast(base);
+            if (Portal == null) throw new Error("Invalid proxy");
+
+            Ice.ObjectPrx obj = communicator().propertyToProxy("TopicManager.Proxy");
+            IceStorm.TopicManagerPrx manager = IceStorm.TopicManagerPrxHelper.checkedCast(obj);
+            if (manager == null) {
+                System.err.println("Invalid proxy");
+                return 1;
+            }
+
+            Ice.ObjectAdapter adapter = communicator().createObjectAdapter("Notifier.Subscriber");
+            Notifier notifier = new NotifierI();
+            Ice.ObjectPrx proxy = adapter.addWithUUID(notifier).ice_oneway();
+            adapter.activate();
+
+            IceStorm.TopicPrx topic = null;
+            try {
+                topic = manager.retrieve("Streams");
+                topic.subscribeAndGetPublisher(null, proxy);
+            } catch (InvalidSubscriber | AlreadySubscribed | NoSuchTopic | BadQoS e) {
+                e.printStackTrace();
+            }
+            new Thread(() -> {
+                communicator().waitForShutdown();
+            }).start();
 
             Scanner scan = new Scanner(System.in);
             String cmd = new String();
@@ -21,6 +59,8 @@ public class Client {
                 cmd = scan.nextLine();
                 parser(cmd);
             }
+
+            topic.unsubscribe(proxy);
         } catch (Ice.LocalException e) {
             e.printStackTrace();
             status = 1;
@@ -36,7 +76,7 @@ public class Client {
                 status = 1;
             }
         }
-        System.exit(status);
+        return status;
     }
 
     private static void parser(String cmd) {
@@ -53,7 +93,7 @@ public class Client {
             else if (cmd_list.length == 2) search(cmd_list[1]);
             else System.err.printf("%s: %s\n", cmd_list[0], "too many arguments");
         }
-        else if(cmd_list[1].equals("play")) {
+        else if(cmd_list[0].equals("play")) {
             if (cmd_list.length == 1)  System.err.printf("%s: %s\n", cmd_list[0], "missing arguments");
             else if (cmd_list.length == 2) play(cmd_list[1]);
             else System.err.printf("%s: %s\n", cmd_list[0], "too many arguments");
@@ -66,8 +106,7 @@ public class Client {
             "%30s   |   %27s   |   %12s   |   %9s   |   %40s\n",
             "[Name]", "[Endpoint]", "[Resolution]", "[Bitrate]", "[Keywords]"
         );
-        System.out.printf("%30s   |   %27s   |   %12s   |   %9s   |   %40s\n", "", "", "", "", "");
-        for (Stream s : portal.getStreams()) {
+        for (Stream s : Portal.getAll()) {
             System.out.printf(
                 "%30s   |   %27s   |   %12s   |   %9s   |   %40s\n",
                 s.getName(),
