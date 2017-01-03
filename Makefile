@@ -4,8 +4,9 @@ SRC = src/main/java
 ICE = src/main/slice
 OUT = build
 
-ICE_JAR := /usr/share/java/ice-3.6.3.jar
-CLASSPATH := ${ICE_JAR}:${OUT}
+ICE_JAR := /usr/share/java/ice.jar
+ICE_STORM_JAR := /usr/share/java/icestorm.jar
+CLASSPATH := ${ICE_JAR}:${ICE_STORM_JAR}:${OUT}
 
 PORTAL = Portal
 STREAMER = Streamer
@@ -31,7 +32,7 @@ portal: ${OUT}/PortalI.class ${OUT}/Portal.class
 ${OUT}/PortalI.class: ${SRC}/PortalI.java ${ICE}/Portal.ice
 	mkdir -p ${OUT}
 	slice2java --output-dir ${SRC} ${ICE}/Portal.ice
-	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/PortalI.java ${SRC}/VideoStreaming/*.java
+	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/PortalI.java ${SRC}/Streaming/*.java
 
 ${OUT}/Portal.class: ${SRC}/Portal.java
 	mkdir -p ${OUT}
@@ -45,7 +46,12 @@ ${OUT}/Streamer.class: ${SRC}/Streamer.java
 	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/Streamer.java
 
 
-client: ${OUT}/PortalI.class ${OUT}/Client.class
+client: ${OUT}/NotifierI.class ${OUT}/Client.class
+
+${OUT}/NotifierI.class: ${SRC}/NotifierI.java ${ICE}/Portal.ice
+	mkdir -p ${OUT}
+	slice2java --output-dir ${SRC} ${ICE}/Portal.ice
+	${JC} -d ${OUT} -classpath ${CLASSPATH} ${SRC}/NotifierI.java ${SRC}/Streaming/*.java
 
 ${OUT}/Client.class: ${SRC}/Client.java
 	mkdir -p ${OUT}
@@ -53,6 +59,7 @@ ${OUT}/Client.class: ${SRC}/Client.java
 
 
 icebox:
+	mkdir -p db
 	icebox --Ice.Config=configs/config.icebox
 
 
@@ -67,8 +74,12 @@ run-client: client
 
 
 clean:
-	rm -rf ${OUT} ${SRC}/VideoStreaming
+	rm -rf ${OUT} ${SRC}/Streaming db
 
 
 stop:
 	$(shell jps | grep 'Portal\|Streamer\|Client' | cut -d" " -f1 | xargs kill -9)
+
+
+free-addresses:
+	$(shell lsof -i:10000 -i:11000 | tail -n +2 | awk '{print $$2}' | xargs kill -9)
