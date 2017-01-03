@@ -1,8 +1,10 @@
+import Streaming.Endpoint;
 import Streaming.NotifierPrx;
 import Streaming.NotifierPrxHelper;
 import Streaming.Stream;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +25,10 @@ public class PortalI extends Streaming._PortalDisp {
         IceStorm.TopicPrx topic = null;
         while (topic == null) {
             try {
-                topic = manager.retrieve("Streams");
+                topic = manager.retrieve("StreamsNotifier");
             } catch (IceStorm.NoSuchTopic e) {
                 try {
-                    topic = manager.create("Streams");
+                    topic = manager.create("StreamsNotifier");
                 } catch (IceStorm.TopicExists ex) {
                     System.err.println("Temporary failure");
                     return;
@@ -37,27 +39,49 @@ public class PortalI extends Streaming._PortalDisp {
         Ice.ObjectPrx publisher = topic.getPublisher().ice_oneway();
         Notifier = NotifierPrxHelper.uncheckedCast(publisher);
 
-        new Thread(() -> new Timer(60000, (z) -> {
-            for (Stream s : Streams.keySet())
-                if (System.currentTimeMillis() - Streams.get(s) >= 60000)
-                    Streams.remove(s);
+        new Thread(() -> new Timer(10000, (z) -> {
+            List<Stream> outdated = new ArrayList<Stream>();
+            for (Stream s : Streams.keySet()) {
+                if (System.currentTimeMillis() - Streams.get(s) >= 10000)
+                    outdated.add(s);
+            }
+            for (Stream s : outdated)
+                remove(s);
         }).start()).start();
     }
 
     // Calls from Streaming Servers
-    public void register(Stream stream, Ice.Current current) {
+    public boolean register(Stream stream, Ice.Current current) {
+        for (Stream s : Streams.keySet()) {
+            if (compare(stream, s)) {
+                System.err.println("register: stream already exists");
+                return false;
+            }
+        }
         Streams.put(stream, System.currentTimeMillis());
         Notifier.inform(String.format("[%s: %s]", "New Stream", stream.getName()));
+        return true;
     }
 
     public void remove(Stream stream, Ice.Current current) {
-        Streams.remove(stream);
-        Notifier.inform(String.format("[%s: %s]", "Removed Stream", stream.getName()));
+        for (Stream s : Streams.keySet()) {
+            if (compare(stream, s)) {
+                Streams.remove(s);
+                Notifier.inform(String.format("[%s: %s]", "Removed Stream", stream.getName()));
+                return;
+            }
+        }
+        System.err.println("remove: stream not found");
     }
 
     public void update(Stream stream, Ice.Current current) {
-        if (Streams.get(stream) != null)
-            Streams.put(stream, System.currentTimeMillis());
+        for (Stream s : Streams.keySet()) {
+            if (compare(stream, s)) {
+                Streams.put(s, System.currentTimeMillis());
+                return;
+            }
+        }
+        System.err.println("update: stream not found");
     }
 
     // Calls from Clients
@@ -69,5 +93,12 @@ public class PortalI extends Streaming._PortalDisp {
 
     public List<Stream> getAll(Ice.Current current) {
         return Streams.keySet().stream().collect(Collectors.toList());
+    }
+
+    // Auxiliar Functions
+    private boolean compare(Stream s1, Stream s2) {
+        Endpoint e1 = s1.getEndpoint();
+        Endpoint e2 = s2.getEndpoint();
+        return e1.getTransport().equals(e2.getTransport()) && e1.getIp().equals(e2.getIp()) && e1.getPort() == e2.getPort();
     }
 }
