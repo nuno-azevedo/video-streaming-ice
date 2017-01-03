@@ -5,7 +5,7 @@ import javax.swing.*;
 public class Streamer {
     public static void main(String args[]) {
         if (args.length != 1) {
-            System.err.println("USAGE: java Streamer $PORTAL_PORT");
+            System.err.println("USAGE: java Streamer $PORT");
             System.exit(1);
         }
 
