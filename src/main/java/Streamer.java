@@ -1,5 +1,7 @@
 import Streaming.*;
 
+import javax.swing.*;
+
 public class Streamer {
     public static void main(String args[]) {
         int status = 0;
@@ -18,6 +20,10 @@ public class Streamer {
                 new String[] { "Film", "Story", "Vagabond" }
             );
             portal.register(stream);
+
+            new Thread(() -> new Timer(60000, (z) -> portal.update(stream)).start()).start();
+
+            while (true);
         } catch (Ice.LocalException e) {
             e.printStackTrace();
             status = 1;
