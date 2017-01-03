@@ -24,7 +24,7 @@ module Streaming {
     sequence<Stream> Streams;
 
     interface Portal {
-        void register(Stream stream);
+        bool register(Stream stream);
         void remove(Stream stream);
         void update(Stream stream);
         Stream get(string stream);
