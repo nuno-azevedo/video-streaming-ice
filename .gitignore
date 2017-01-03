@@ -3,6 +3,6 @@
 .gradle
 build
 ice-demos
-src/main/java/VideoStreaming
+src/main/java/Streaming
 *.mp4
 db
