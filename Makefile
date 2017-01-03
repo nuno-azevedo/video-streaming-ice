@@ -12,6 +12,14 @@ PORTAL = Portal
 STREAMER = Streamer
 CLIENT = Client
 
+PORT = 12000
+VIDEO = videos/PopeyeAliBaba.mp4
+NAME = PopeyeAliBaba
+ENDPOINT = tcp://127.0.0.1:12001
+RESOLUTION = 480x270
+BITRATE = 400
+KEYWORDS = "Kids, Popeye"
+
 .SUFFIXES: .java .class
 
 # .java.class:
@@ -64,13 +72,13 @@ icebox:
 
 
 run-portal: portal
-	- @export CLASSPATH=${CLASSPATH}; java ${PORTAL}
+	- @export CLASSPATH=${CLASSPATH}; java ${PORTAL} ${PORT}
 
 run-streamer: streamer
-	- @export CLASSPATH=${CLASSPATH}; java ${STREAMER}
+	- @export CLASSPATH=${CLASSPATH}; java ${STREAMER} ${PORT} ${VIDEO} ${NAME} ${ENDPOINT} ${RESOLUTION} ${BITRATE} ${KEYWORDS}
 
 run-client: client
-	- @export CLASSPATH=${CLASSPATH}; java ${CLIENT}
+	- @export CLASSPATH=${CLASSPATH}; java ${CLIENT} ${PORT}
 
 
 clean:
