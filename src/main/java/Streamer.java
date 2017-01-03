@@ -1,11 +1,12 @@
 import Streaming.*;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class Streamer {
     public static void main(String args[]) {
-        if (args.length != 1) {
-            System.err.println("USAGE: java Streamer $PORT");
+        if (args.length != 7) {
+            System.err.println("USAGE: java Streamer $PORT $VIDEO $NAME $ENDPOINT $RESOLUTION $BITRATE $KEYWORDS");
             System.exit(1);
         }
 
@@ -18,20 +19,29 @@ public class Streamer {
             if (portal == null) throw new Error("Invalid proxy");
 
             Stream stream = new Stream(
-                "The Vagabond",
-                new Endpoint("tcp", "127.0.0.1", 12000),
-                new Resolution(480, 720),
-                400,
-                new String[] { "Film", "Story", "Vagabond" }
+                args[2],
+                new Endpoint(args[3].split("://")[0], args[3].split("://")[1], Integer.parseInt(args[3].split(":")[2])),
+                new Resolution(Integer.parseInt(args[4].split("x")[0]), Integer.parseInt(args[4].split("x")[1])),
+                Integer.parseInt(args[5]),
+                args[6].split(" *, *")
             );
             if (!portal.register(stream)) {
                 System.err.println("register: stream already exists");
                 System.exit(1);
             }
-
             new Thread(() -> new Timer(5000, (z) -> portal.update(stream)).start()).start();
-            while (true);
-//            portal.remove(stream);
+
+            ProcessBuilder pb = new ProcessBuilder(
+                "ffmpeg", "-i", args[1], "-vcodec", "libx264", "-f", "h264", args[3] + "?listen=1"
+            );
+            Process ffmpeg = null;
+            try {
+                ffmpeg = pb.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ffmpeg.waitFor();
+            portal.remove(stream);
         } catch (Ice.LocalException e) {
             e.printStackTrace();
             status = 1;
