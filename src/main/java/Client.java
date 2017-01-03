@@ -21,9 +21,10 @@ public class Client extends Ice.Application {
 
     public static void main(String args[]) {
         if (args.length != 1) {
-            System.err.println("USAGE: java Client $PORTAL_PORT");
+            System.err.println("USAGE: java Client $PORT");
             System.exit(1);
         }
+
         Client app = new Client();
         int status = app.main("Subscriber", args, "configs/config.sub");
         System.exit(status);
