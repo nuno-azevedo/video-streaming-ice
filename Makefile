@@ -12,6 +12,7 @@ PORTAL = Portal
 STREAMER = Streamer
 CLIENT = Client
 
+######## STREAM EXAMPLE ########
 PORT = 11000
 VIDEO = videos/PopeyeAliBaba.mp4
 NAME = PopeyeAliBaba
@@ -19,16 +20,11 @@ ENDPOINT = tcp://127.0.0.1:12000
 RESOLUTION = 480x270
 BITRATE = 400
 KEYWORDS = "Kids, Popeye"
+################################
+
 
 .SUFFIXES: .java .class
 
-# .java.class:
-	# mkdir -p ${OUT}
-	# ${JC} -d ${OUT} -classpath ${CLASSPATH} $*.java
-
-# CLASSES = ${SRC}/Streamer.java ${SRC}/Client.java ${SRC}/PrinterI.java
-
-# classes: ${CLASSES:.java=.class}
 
 default: build
 
@@ -86,8 +82,8 @@ clean:
 
 
 stop:
-	$(shell jps | grep 'Portal\|Streamer\|Client' | cut -d" " -f1 | xargs kill -9)
+	$(shell jps | grep 'Portal\|Streamer\|Client' | awk '{ print $$1 }' | xargs kill -9)
 
 
 free-addresses:
-	$(shell lsof -i:10000 -i:11000 -i:12000 -i:12001 | tail -n +2 | awk '{print $$2}' | xargs kill -9)
+	$(shell lsof -i:10000 -i:11000 -i:12000 -i:12001 | tail -n +2 | awk '{ print $$2 }' | xargs kill -9)

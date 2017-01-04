@@ -15,7 +15,7 @@ $ make run-portal
 
 ###### 3° Streaming Server
 ```bash
-$ make run-server
+$ make run-streamer
 ```
 
 ###### 4° Client
