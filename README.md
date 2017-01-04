@@ -1,25 +1,24 @@
 # Video Streaming
 
 <br>
-### Make Icebox
+### How to Run
+
+###### 1° Icebox
 ```bash
 $ make icebox
 ```
 
-<br>
-### How to Run
-
-###### 1° Portal
+###### 2° Portal
 ```bash
 $ make run-portal
 ```
 
-###### 2° Streaming Server
+###### 3° Streaming Server
 ```bash
 $ make run-server
 ```
 
-###### 3° Client
+###### 4° Client
 ```bash
 $ make run-client
 ```
@@ -27,8 +26,8 @@ $ make run-client
 <br>
 ### Client Commands
 - **list** : Shows the list of streams available
-- **search** *‘[keywords]’* : Search for streams that contain the keywords
-- **play** *‘[name]’* : Play stream that have that name 
+- **search** *‘[keywords]’* : Search for streams which contains the keywords
+- **play** *‘[name]’* : Play the stream with that name 
 
 <br>
 ### Clean build files
@@ -43,7 +42,7 @@ $ make stop
 ```
 
 <br>
-### Close programs to free ports
+### Close programs to free the ports
 ```bash
 $ make free-addresses
 ```
