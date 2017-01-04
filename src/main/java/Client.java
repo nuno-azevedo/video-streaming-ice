@@ -60,9 +60,6 @@ public class Client extends Ice.Application {
             } catch (InvalidSubscriber | AlreadySubscribed | NoSuchTopic | BadQoS e) {
                 e.printStackTrace();
             }
-            new Thread(() -> {
-                communicator().waitForShutdown();
-            }).start();
 
             Scanner scan = new Scanner(System.in);
             String cmd = new String();
@@ -71,7 +68,6 @@ public class Client extends Ice.Application {
                 cmd = scan.nextLine();
                 parser(cmd);
             }
-
             topic.unsubscribe(proxy);
         } catch (Ice.LocalException e) {
             e.printStackTrace();
@@ -79,13 +75,14 @@ public class Client extends Ice.Application {
         } catch (Exception e) {
             System.err.println(e.toString());
             status = 1;
-        }
-        if (ic != null) {
-            try {
-                ic.destroy();
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                status = 1;
+        } finally {
+            if (ic != null) {
+                try {
+                    ic.destroy();
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    status = 1;
+                }
             }
         }
         return status;

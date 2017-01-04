@@ -12,10 +12,10 @@ PORTAL = Portal
 STREAMER = Streamer
 CLIENT = Client
 
-PORT = 12000
+PORT = 11000
 VIDEO = videos/PopeyeAliBaba.mp4
 NAME = PopeyeAliBaba
-ENDPOINT = tcp://127.0.0.1:12001
+ENDPOINT = tcp://127.0.0.1:12000
 RESOLUTION = 480x270
 BITRATE = 400
 KEYWORDS = "Kids, Popeye"
@@ -90,4 +90,4 @@ stop:
 
 
 free-addresses:
-	$(shell lsof -i:10000 -i:11000 | tail -n +2 | awk '{print $$2}' | xargs kill -9)
+	$(shell lsof -i:10000 -i:11000 -i:12000 -i:12001 | tail -n +2 | awk '{print $$2}' | xargs kill -9)
