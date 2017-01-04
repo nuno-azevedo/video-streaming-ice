@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class PortalI extends Streaming._PortalDisp {
     private Map<Stream, Long> Streams = new HashMap<Stream, Long>();
-    NotifierPrx Notifier = null;
+    private NotifierPrx Notifier = null;
 
     PortalI() {
         Ice.ObjectPrx obj = Ice.Application.communicator().propertyToProxy("TopicManager.Proxy");
@@ -39,7 +39,7 @@ public class PortalI extends Streaming._PortalDisp {
         Ice.ObjectPrx publisher = topic.getPublisher().ice_oneway();
         Notifier = NotifierPrxHelper.uncheckedCast(publisher);
 
-        new Thread(() -> new Timer(10000, (z) -> {
+        new Timer(10000, (z) -> {
             List<Stream> outdated = new ArrayList<Stream>();
             for (Stream s : Streams.keySet()) {
                 if (System.currentTimeMillis() - Streams.get(s) >= 10000)
@@ -47,7 +47,7 @@ public class PortalI extends Streaming._PortalDisp {
             }
             for (Stream s : outdated)
                 remove(s);
-        }).start()).start();
+        }).start();
     }
 
     // Calls from Streaming Servers
@@ -60,6 +60,7 @@ public class PortalI extends Streaming._PortalDisp {
         }
         Streams.put(stream, System.currentTimeMillis());
         Notifier.inform(String.format("[%s: %s]", "New Stream", stream.getName()));
+        System.err.println("register: stream successfully registered");
         return true;
     }
 
@@ -68,6 +69,7 @@ public class PortalI extends Streaming._PortalDisp {
             if (compare(stream, s)) {
                 Streams.remove(s);
                 Notifier.inform(String.format("[%s: %s]", "Removed Stream", stream.getName()));
+                System.err.println("remove: stream successfully removed");
                 return;
             }
         }
