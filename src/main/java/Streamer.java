@@ -1,4 +1,3 @@
-import IceInternal.Ex;
 import Streaming.*;
 
 import javax.swing.*;
@@ -9,6 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Streamer {
     public static void main(String args[]) {
@@ -77,7 +78,7 @@ public class Streamer {
                 }
             }).start();
 
-            byte bytes[] = new byte[64];
+            byte bytes[] = new byte[128];
             while (inputStream.read(bytes) >= 1) {
                 for (int i = 0; i < clients.size(); i++) {
                     try {
