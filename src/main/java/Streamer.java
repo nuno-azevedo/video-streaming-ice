@@ -53,9 +53,10 @@ public class Streamer {
 //            Runtime.getRuntime().addShutdownHook(new Thread(() -> portal.remove(stream)));
 
             ProcessBuilder pb = new ProcessBuilder(
-                "ffmpeg", "-i", video,
-                 "-vcodec", "libx264", "-f", "h264", "-s", width + "x" + height,
-                 transport + "://" + ip + ":" + ffmpeg_port + "?listen=1"
+                "ffmpeg", "-i", video, "-nostats", "-loglevel", "0", "-f", "mpegts", "-analyzeduration", "500k",
+                "-probesize", "500k", "-r", "30", "-g", "30", "-s", width + "x" + height, "-c:v", "libx264",
+                "-pix_fmt", "yuv420p", "-preset", "ultrafast", "-tune", "zerolatency", "-b:v", bitrate + "k",
+                "-b:a", "32k", transport + "://" + ip + ":" + ffmpeg_port + "?listen=1"
             );
             pb.start();
             Thread.sleep(1000);
@@ -76,7 +77,7 @@ public class Streamer {
                 }
             }).start();
 
-            byte bytes[] = new byte[2048];
+            byte bytes[] = new byte[64];
             while (inputStream.read(bytes) >= 1) {
                 for (int i = 0; i < clients.size(); i++) {
                     try {

@@ -7,7 +7,9 @@ import Streaming.PortalPrx;
 import Streaming.PortalPrxHelper;
 import Streaming.Stream;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -138,7 +140,7 @@ public class Client extends Ice.Application {
         for (Stream s : Portal.getAll()) {
             if (s.getName().equals(name)) {
                 ProcessBuilder pb = new ProcessBuilder(
-                    "ffplay",
+                    "ffplay", "-nostats", "-loglevel", "0",
                     s.getEndpoint().getTransport() + "://" + s.getEndpoint().getIp() + ":" + s.getEndpoint().getPort()
                 );
                 try {
