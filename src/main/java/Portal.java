@@ -27,15 +27,16 @@ public class Portal extends Ice.Application {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             status = 1;
-        }
-        if (ic != null) {
-            try {
-                ic.destroy();
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                status = 1;
+        } finally {
+            if (ic != null) {
+                try {
+                    ic.destroy();
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    status = 1;
+                }
             }
+            return status;
         }
-        return status;
     }
 }
