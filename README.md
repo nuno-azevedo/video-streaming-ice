@@ -1,16 +1,16 @@
 # Video Streaming
 
 <br>
-### How to Build
+## How to Build
 ```bash
 $ make
 ```
 
 
 <br>
-### How to Run
+## How to Run
 
-##### 1° Icebox
+#### 1° Icebox
 ```bash
 $ make icebox
 ```
@@ -20,7 +20,8 @@ $ mkdir -p db
 $ icebox --Ice.Config=configs/config.icebox
 ```
 
-##### 2° Portal
+<br>
+#### 2° Portal
 ```bash
 $ make run-portal
 ```
@@ -29,7 +30,8 @@ $ make run-portal
 $ java Portal ${PORT}
 ```
 
-##### 3° Streaming Server
+<br>
+#### 3° Streaming Server
 ```bash
 $ make run-streamer
 ```
@@ -38,7 +40,8 @@ $ make run-streamer
 $ java Streamer ${PORT} ${VIDEO} ${NAME} ${ENDPOINT} ${RESOLUTION} ${BITRATE} ${KEYWORDS}
 ```
 
-##### 4° Client
+<br>
+#### 4° Client
 ```bash
 $ make run-client
 ```
@@ -48,25 +51,25 @@ $ java Client ${PORT}
 ```
 
 <br>
-### Client Commands
-- **list** : Shows the list of streams available
-- **search** *‘[keywords]’* : Searches for streams that contains the keywords given by argument
-- **play** *‘[name]’* : Plays the stream with the name given by argument 
-
-<br>
-### Clean build files
+## Clean build files
 ```bash
 $ make clean
 ```
 
 <br>
-### Stop the running programs
+## Stop the running programs
 ```bash
 $ make stop
 ```
 
 <br>
-### Free the endpoints
+## Free the endpoints
 ```bash
 $ make free-addresses
 ```
+
+<br>
+## Client Commands
+- **list** : Shows the list of streams available
+- **search** *‘[keywords]’* : Searches for streams that contains the keywords given by argument
+- **play** *‘[name]’* : Plays the stream with the name given by argument 
