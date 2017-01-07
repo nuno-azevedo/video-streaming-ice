@@ -7,9 +7,7 @@ import Streaming.PortalPrx;
 import Streaming.PortalPrxHelper;
 import Streaming.Stream;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +37,6 @@ public class Client extends Ice.Application {
         try {
             ic = Ice.Util.initialize(args);
             Ice.ObjectPrx base = ic.stringToProxy("Portal: default -p " + args[0]);
-
             Portal = PortalPrxHelper.checkedCast(base);
             if (Portal == null) throw new Error("Invalid proxy");
 
@@ -118,7 +115,7 @@ public class Client extends Ice.Application {
 
     private static void list() {
         System.out.printf(
-            "%30s   |   %27s   |   %12s   |   %9s   |   %40s\n",
+            "%20s  |  %27s  |  %12s  |  %9s  |  %30s\n",
             "[Name]", "[Endpoint]", "[Resolution]", "[Bitrate]", "[Keywords]"
         );
         for (Stream s : Portal.getAll()) print(s);
@@ -126,7 +123,7 @@ public class Client extends Ice.Application {
 
     private static void search(String keys) {
         System.out.printf(
-            "%30s   |   %27s   |   %12s   |   %9s   |   %40s\n",
+            "%20s  |  %27s  |  %12s  |  %9s  |  %30s\n",
             "[Name]", "[Endpoint]", "[Resolution]", "[Bitrate]", "[Keywords]"
         );
         List<String> keywords = Arrays.asList(keys.split(" *, *"));
@@ -140,7 +137,7 @@ public class Client extends Ice.Application {
         for (Stream s : Portal.getAll()) {
             if (s.getName().equals(name)) {
                 ProcessBuilder pb = new ProcessBuilder(
-                    "ffplay", "-nostats", "-loglevel", "0",
+                    "ffplay", "-autoexit", "-nostats", "-loglevel", "0",
                     s.getEndpoint().getTransport() + "://" + s.getEndpoint().getIp() + ":" + s.getEndpoint().getPort()
                 );
                 try {
@@ -151,12 +148,12 @@ public class Client extends Ice.Application {
                 return;
             }
         }
-        System.err.println("play: stream not found");
+        System.err.println("play: ‘" + name + "’ stream not found");
     }
 
     private static void print(Stream s) {
         System.out.printf(
-            "%30s   |   %27s   |   %12s   |   %9s   |   %40s\n",
+            "%20s  |  %27s  |  %12s  |  %9s  |  %30s\n",
             s.getName(),
             s.getEndpoint().getTransport() + "://" + s.getEndpoint().getIp() + ":" + s.getEndpoint().getPort(),
             s.getResolution().getWidth() + "x" + s.getResolution().getHeight(),
