@@ -49,7 +49,6 @@ public class Streamer {
                 System.exit(1);
             }
             new Timer(5000, (z) -> portal.update(stream)).start();
-//            Runtime.getRuntime().addShutdownHook(new Thread(() -> portal.remove(stream)));
 
             ProcessBuilder pb = new ProcessBuilder(
                 "ffmpeg", "-i", video, "-nostats", "-loglevel", "0", "-f", "mpegts", "-analyzeduration", "500k",
@@ -64,28 +63,18 @@ public class Streamer {
             InputStream inputStream = input.getInputStream();
             ServerSocket serverSocket = new ServerSocket(ffplay_port);
             List<Socket> clients = new ArrayList<>();
-            new Thread(() -> {
-                while (true) {
-                    Socket client = null;
+            while (true) {
+                Socket client = serverSocket.accept();
+                clients.add(client);
+                new Thread(() -> {
+                    byte bytes[] = new byte[4096];
                     try {
-                        client = serverSocket.accept();
+                        DataOutputStream writer = new DataOutputStream(client.getOutputStream());
+                        while (inputStream.read(bytes) >= 1) writer.write(bytes);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    clients.add(client);
-                }
-            }).start();
-
-            byte bytes[] = new byte[128];
-            while (inputStream.read(bytes) >= 1) {
-                for (int i = 0; i < clients.size(); i++) {
-                    try {
-                        DataOutputStream writer = new DataOutputStream(clients.get(i).getOutputStream());
-                        writer.write(bytes);
-                    } catch (Exception e) {
-                        clients.remove(i);
-                    }
-                }
+                }).start();
             }
         } catch (Ice.LocalException e) {
             e.printStackTrace();
