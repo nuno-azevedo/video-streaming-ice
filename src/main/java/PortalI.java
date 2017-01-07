@@ -41,10 +41,9 @@ public class PortalI extends Streaming._PortalDisp {
 
         new Timer(10000, (z) -> {
             List<Stream> outdated = new ArrayList<Stream>();
-            for (Stream s : Streams.keySet()) {
+            for (Stream s : Streams.keySet())
                 if (System.currentTimeMillis() - Streams.get(s) >= 10000)
                     outdated.add(s);
-            }
             for (Stream s : outdated)
                 remove(s);
         }).start();
@@ -59,8 +58,8 @@ public class PortalI extends Streaming._PortalDisp {
             }
         }
         Streams.put(stream, System.currentTimeMillis());
-        Notifier.inform(String.format("[%s: %s]", "New Stream", stream.getName()));
-        System.err.println("register: stream successfully registered");
+        Notifier.inform(String.format("[%s: %s]", "Stream is now available", stream.getName()));
+        System.err.println("register: ‘" + stream.getName() + "’ stream successfully registered");
         return true;
     }
 
@@ -68,12 +67,12 @@ public class PortalI extends Streaming._PortalDisp {
         for (Stream s : Streams.keySet()) {
             if (compare(stream, s)) {
                 Streams.remove(s);
-                Notifier.inform(String.format("[%s: %s]", "Removed Stream", stream.getName()));
-                System.err.println("remove: stream successfully removed");
+                Notifier.inform(String.format("[%s: %s]", "Stream was removed", stream.getName()));
+                System.err.println("remove: ‘" + stream.getName() + "’ stream successfully removed");
                 return;
             }
         }
-        System.err.println("remove: stream not found");
+        System.err.println("remove: ‘" + stream.getName() + "’ stream not found");
     }
 
     public void update(Stream stream, Ice.Current current) {
@@ -83,7 +82,7 @@ public class PortalI extends Streaming._PortalDisp {
                 return;
             }
         }
-        System.err.println("update: stream not found");
+        System.err.println("update: ‘" + stream.getName() + "’ stream not found");
     }
 
     // Calls from Clients
