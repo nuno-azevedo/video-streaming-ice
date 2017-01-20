@@ -68,13 +68,13 @@ icebox:
 
 
 run-portal: portal
-	- @export CLASSPATH=${CLASSPATH}; java ${PORTAL} ${PORT}
+	@export CLASSPATH=${CLASSPATH}; java ${PORTAL} ${PORT}
 
 run-streamer: streamer
-	- @export CLASSPATH=${CLASSPATH}; java ${STREAMER} ${PORT} ${VIDEO} ${NAME} ${ENDPOINT} ${RESOLUTION} ${BITRATE} ${KEYWORDS}
+	@export CLASSPATH=${CLASSPATH}; java ${STREAMER} ${PORT} ${VIDEO} ${NAME} ${ENDPOINT} ${RESOLUTION} ${BITRATE} ${KEYWORDS}
 
 run-client: client
-	- @export CLASSPATH=${CLASSPATH}; java ${CLIENT} ${PORT}
+	@export CLASSPATH=${CLASSPATH}; java ${CLIENT} ${PORT}
 
 
 clean:
@@ -82,7 +82,7 @@ clean:
 
 
 stop:
-	$(shell jps | grep 'Portal\|Streamer\|Client' | awk '{ print $$1 }' | xargs kill -9)
+	$(shell jps | grep '${PORTAL}\|${STREAMER}\|${CLIENT}' | awk '{ print $$1 }' | xargs kill -9)
 
 
 free-addresses:
